@@ -119,7 +119,10 @@ USE_TZ = True
 # Префикс в url-адрес для получения статики
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/'  # префикс к url-адресу для браузера (расположение статических файлов). Отображается в devTools
+
+# Указываем нестандартный путь хранения статических файлов (общие для всего проекта внутри backend)
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # В БД создаётся id с уникальным порядковым номером (1, 2, 3)
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
