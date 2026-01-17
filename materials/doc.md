@@ -126,4 +126,35 @@ app_name определяет приложение, namespace определяе
 ![alt text](image-7.png)
 
 ### Создание копии БД в json
-` python manage.py dumpdata goods.Categories > fixtures/goods/cats.json`
+` python -Xutf8 manage.py dumpdata goods.Categories -o fixtures/goods/cats.json --indent=4`
+
+### ORM
+1. Двойная фильтрация в условии
+`Products.objects.filter(price__lt=300).filter(price__gt=100).order_by('-price')` (order_by можно поставить перед первым filter)
+
+2. Поиск товара по категориям
+`Products.objects.filter(category__id=7)` (после __ название поля)
+`Products.objects.filter(category__slug='kuhnya')`
+
+3. Проверка запроса
+```sql
+goods = Products.objects.filter(category_id=7)
+gooods.exists()
+-- SELECT 1 AS "a"
+-- FROM "product"
+-- WHERE "product"."category_id" = 7
+-- LIMIT 1 [0.28ms]
+-- Out[9]: True
+```
+
+
+### templatetags
+1. `register = template.Library()` - добавление пользовательской логики в шаблоны Django.
+- `template.Library()` - создаёт экземпляр библиотеки шаблонов
+- `register` - переменная, через которую регистрируются кастомные теги и фильтры.
+
+2. `@register.simple_tag()` - декоратор, превращающий функцию в шаблонный тег. Особенности:
+- Позволяет вызывать Python-функцию прямо в шаблоне Django
+- Тег доступен в шаблонах после импорта библиотеки
+- Обработка аргументов: может принимать параметры из шаблона (опционально)
+- Возвращает значение, которое вставляется в шаблон

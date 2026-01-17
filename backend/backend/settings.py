@@ -129,6 +129,10 @@ STATIC_URL = 'static/'  # префикс к url-адресу для браузе
 # Указываем нестандартный путь хранения статических файлов (общие для всего проекта внутри backend)
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# MEDIA-файлы
+MEDIA_URL = 'media/'  # (!) название URL-префикса, не папка (!)
+MEDIA_ROOT = BASE_DIR / 'media' # Директория с медиа-файлами
+
 # Устройства для работы утилиты (debug_toolbar)
 INTERNAL_IPS = [
     '127.0.0.1',
