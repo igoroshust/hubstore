@@ -1,16 +1,17 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+from goods.models import Categories
+
 
 def index(request):
-    """Представление (контроллер) для главной страницы"""
-    context = {"title": "Home - Главная", "content": "Магазин мебели HOME"}
+    categories = Categories.objects.all()
+    context = {"title": "Home - Главная", "content": "Магазин мебели HOME", "categories": categories}
 
     return render(request, "main/index.html", context)
 
 
 def about(request):
-    """О нас"""
     context = {
         "title": "Home - О нас",
         "content": "О нас",

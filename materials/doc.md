@@ -119,3 +119,11 @@ app_name - кто я? (приложение)
 namespace - где я? (контекст подключения)
 
 app_name определяет приложение, namespace определяет его экземпляр в URL-дереве.
+
+
+### Работа с моделями через shell
+1. Создание записи
+![alt text](image-7.png)
+
+### Создание копии БД в json
+` python manage.py dumpdata goods.Categories > fixtures/goods/cats.json`

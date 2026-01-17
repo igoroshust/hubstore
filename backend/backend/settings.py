@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'main.apps.MainConfig',
-    'goods.apps.GoodsConfig',
+    'debug_toolbar',
+    
+    'main',
+    'goods',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -124,6 +128,11 @@ STATIC_URL = 'static/'  # префикс к url-адресу для браузе
 
 # Указываем нестандартный путь хранения статических файлов (общие для всего проекта внутри backend)
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Устройства для работы утилиты (debug_toolbar)
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # В БД создаётся id с уникальным порядковым номером (1, 2, 3)
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
