@@ -161,3 +161,13 @@ gooods.exists()
 
 ### Обратное разрешение URL-адресов
 ![alt text](image-8.png)
+
+### Реализация пагинации
+**Контроллер**
+![alt text](image-12.png)
+
+**Шаблон**
+![alt text](image-13.png)
+
+**Методы пагинатора**
+![alt text](image-10.png)
