@@ -131,7 +131,7 @@
         <a
           class="page-link"
           href="{% if goods.has_previous %}
-          {% url 'catalog:index' slug_url goods.previous_page_number %}
+          ?page={{ goods.previous_page_number }}
           {% else %}
           #
           {% endif %}
@@ -143,7 +143,8 @@
       {% for page in goods.paginator.page_range %}
       {% if page >= goods.number|add:-2 and page <= goods.number|add:2 %}
       <li class="page-item {% if goods.number == page %}active{% endif %}">
-        <a class="page-link" href="{% url 'catalog:index' slug_url page %}"
+        {# Браузер автоматически открывает URL-адрес с указанными параметрами #}
+        <a class="page-link" href="?page={{ page }}"  
           >{{ page }}</a
         >
       </li>
@@ -154,7 +155,7 @@
         <a
           class="page-link"
           href="{% if goods.has_next %}
-        {% url 'catalog:index' slug_url goods.next_page_number %}
+          ?page={{ goods.next_page_number }}
         {% else %}
         #
         {% endif %}

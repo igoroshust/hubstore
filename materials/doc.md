@@ -162,12 +162,187 @@ gooods.exists()
 ### Обратное разрешение URL-адресов
 ![alt text](image-8.png)
 
-### Реализация пагинации
+## Пагинация
+
+### Каноничная версия 
 **Контроллер**
-![alt text](image-12.png)
+```python
+from django.core.paginator import Paginator
+from django.shortcuts import get_list_or_404, render
+from goods.models import Products 
+
+
+def catalog(request, cat_slug):
+    
+    page = request.GET.get('page', 1)
+    
+    if cat_slug == 'vse-tovary':
+        goods = Products.objects.all()
+    else:
+        goods = get_list_or_404(Products.objects.filter(category__slug=cat_slug))
+
+    paginator = Paginator(goods, 3)  # Выводим по 3 товара на каждую страницу
+    current_page = paginator.page(int(page))  # Текущая страница, отображаемая пользователю
+    
+    context = {
+        "title": "Home - Каталог",
+        "goods": current_page,  # queryset урезан до количества отображаемых элементов. Объект queryset расширяется методами пагинатора (page_range и т.д.)
+        "slug_url": cat_slug,
+    }
+    
+    
+    return render(request, "goods/catalog.html", context)
+```
+
+**Маршруты**
+```python
+from django.urls import path
+from goods import views
+
+app_name = 'goods'
+
+urlpatterns = [
+    path('<slug:cat_slug>/', views.catalog, name='index'),
+    path('product/<slug:product_slug>', views.product, name='product'),
+]
+```
 
 **Шаблон**
-![alt text](image-13.png)
+```html
+<!-- Пагинация -->
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center my-4">
+    <div class="custom-shadow d-flex">
+      <li class="page-item {% if not goods.has_previous %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="{% if goods.has_previous %}
+          ?page={{ goods.previous_page_number }}
+          {% else %}
+          #
+          {% endif %}
+        "
+          >Назад</a
+        >
+      </li>
+
+      {% for page in goods.paginator.page_range %}
+      {% if page >= goods.number|add:-2 and page <= goods.number|add:2 %}
+      <li class="page-item {% if goods.number == page %}active{% endif %}">
+        {# Браузер автоматически открывает URL-адрес с указанными параметрами #}
+        <a class="page-link" href="?page={{ page }}"  
+          >{{ page }}</a
+        >
+      </li>
+      {% endif %}
+      {% endfor %}
+
+      <li class="page-item {% if not goods.has_next %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="{% if goods.has_next %}
+          ?page={{ goods.next_page_number }}
+        {% else %}
+        #
+        {% endif %}
+        "
+          >Вперёд</a
+        >
+      </li>
+    </div>
+  </ul>
+</nav>
+```
+
+
+
+### Первая версия (не рекомендуемая)
+**Контроллер**
+```python
+from django.core.paginator import Paginator
+from django.shortcuts import get_list_or_404, render
+from goods.models import Products 
+
+
+def catalog(request, cat_slug, page=1):
+    
+    if cat_slug == 'vse-tovary':
+        goods = Products.objects.all()
+    else:
+        goods = get_list_or_404(Products.objects.filter(category__slug=cat_slug))
+
+    paginator = Paginator(goods, 3)  # Выводим по 3 товара на каждую страницу
+    current_page = paginator.page(page)  # Текущая страница, отображаемая пользователю
+    
+    context = {
+        "title": "Home - Каталог",
+        "goods": current_page,  # queryset урезан до количества отображаемых элементов. Объект queryset расширяется методами пагинатора (page_range и т.д.)
+        "slug_url": cat_slug,
+    }
+    
+    
+    return render(request, "goods/catalog.html", context)
+```
+
+**Маршруты (goods)**
+```python
+from django.urls import path
+from goods import views
+
+app_name = 'goods'
+
+urlpatterns = [
+    path('<slug:cat_slug>/', views.catalog, name='index'),
+    path('<slug:cat_slug>/<int:page>/', views.catalog, name='index'),
+    path('product/<slug:product_slug>', views.product, name='product'),
+]
+```
+
+**Шаблон**
+```html
+<!-- Пагинация -->
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center my-4">
+    <div class="custom-shadow d-flex">
+      <li class="page-item {% if not goods.has_previous %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="{% if goods.has_previous %}
+          {% url 'catalog:index' slug_url goods.previous_page_number %}
+          {% else %}
+          #
+          {% endif %}
+        "
+          >Назад</a
+        >
+      </li>
+
+      {% for page in goods.paginator.page_range %}
+      {% if page >= goods.number|add:-2 and page <= goods.number|add:2 %}
+      <li class="page-item {% if goods.number == page %}active{% endif %}">
+        <a class="page-link" href="{% url 'catalog:index' slug_url page %}"
+          >{{ page }}</a
+        >
+      </li>
+      {% endif %}
+      {% endfor %}
+
+      <li class="page-item {% if not goods.has_next %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="{% if goods.has_next %}
+        {% url 'catalog:index' slug_url goods.next_page_number %}
+        {% else %}
+        #
+        {% endif %}
+        "
+          >Вперёд</a
+        >
+      </li>
+    </div>
+  </ul>
+</nav>
+```
 
 **Методы пагинатора**
 ![alt text](image-10.png)
