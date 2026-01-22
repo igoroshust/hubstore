@@ -6,11 +6,20 @@ from goods.models import Products
 def catalog(request, cat_slug):
     
     page = request.GET.get('page', 1)
+    on_sale = request.GET.get('on_sale', None)  # имя переменной по атрибуты name в форме
+    order_by = request.GET.get('order_by', None)
+    
     
     if cat_slug == 'vse-tovary':
         goods = Products.objects.all()
     else:
         goods = get_list_or_404(Products.objects.filter(category__slug=cat_slug))
+        
+    if on_sale:
+        goods = goods.filter(discount__gt=0)
+        
+    if order_by and order_by != "default":
+        goods = goods.order_by(order_by)
 
     paginator = Paginator(goods, 3)  # Выводим по 3 товара на каждую страницу
     current_page = paginator.page(int(page))  # Текущая страница, отображаемая пользователю
